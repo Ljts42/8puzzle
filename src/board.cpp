@@ -1,5 +1,7 @@
 #include "board.h"
 
+#define distance(a, b) (a > b) ? a - b : b - a
+
 Board::Board(const std::vector<std::vector<unsigned>> & data)
     : m_data(data)
 {
@@ -77,19 +79,19 @@ bool Board::is_solvable() const
     if (is_goal()) {
         return true;
     }
-    bool even = false;
+    unsigned cnt = 0;
     for (unsigned col1 = 0; col1 < size(); ++col1) {
         for (unsigned row1 = 0; row1 < size(); ++row1) {
             for (unsigned col2 = 0; col2 <= col1; ++col2) {
                 for (unsigned row2 = 0; (col2 < col1 && row2 < size()) || (row2 < row1); ++row2) {
                     if (m_data[col1][row1] < m_data[col2][row2] && m_data[col1][row1] && m_data[col2][row2]) {
-                        even = !even;
+                        ++cnt;
                     }
                 }
             }
         }
     }
-    return 1 & (even ^ (m_empty.first | size()));
+    return (1 & (cnt ^ (m_empty.first | size()))) != 0u;
 }
 
 unsigned Board::hamming() const
@@ -105,7 +107,7 @@ unsigned Board::hamming() const
             }
         }
     }
-    return hamm_value - (m_data[size() - 1][size() - 1] == 0);
+    return hamm_value - static_cast<unsigned>(m_data[size() - 1][size() - 1] == 0);
 }
 
 unsigned Board::manhattan() const
@@ -114,8 +116,8 @@ unsigned Board::manhattan() const
     for (unsigned col = 0; col < size(); ++col) {
         for (unsigned row = 0; row < size(); ++row) {
             if (m_data[col][row] != 0) {
-                manh_value += abs(static_cast<int>((m_data[col][row] - 1) / size()) - col);
-                manh_value += abs(static_cast<int>((m_data[col][row] - 1) % size()) - row);
+                manh_value += distance((m_data[col][row] - 1) / size(), col);
+                manh_value += distance((m_data[col][row] - 1) % size(), row);
             }
         }
     }
