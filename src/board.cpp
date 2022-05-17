@@ -35,12 +35,10 @@ Board Board::create_random(const unsigned size)
         return Board();
     }
 
-    std::random_device rd;
-    std::mt19937 generator(rd());
-
     std::vector<unsigned> permutation(size * size, 0);
     std::iota(permutation.begin(), permutation.end() - 1, 1);
-    std::shuffle(permutation.begin(), permutation.end(), generator);
+
+    std::shuffle(permutation.begin(), permutation.end(), random_struct().get_rand());
 
     std::vector<std::vector<unsigned>> table(size, std::vector<unsigned>(size));
     for (unsigned col = 0; col < size; ++col) {
