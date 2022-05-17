@@ -136,7 +136,7 @@ unsigned Board::hash() const
     return hash_value;
 }
 
-Board Board::make_move(unsigned col, unsigned row) const
+Board Board::make_move(const unsigned col, const unsigned row) const
 {
     auto result(m_data);
     std::swap(result[m_empty.first][m_empty.second], result[col][row]);
@@ -161,7 +161,7 @@ std::vector<Board> Board::next_moves() const
     return moves;
 }
 
-const std::vector<unsigned> & Board::operator[](unsigned col) const
+const std::vector<unsigned> & Board::operator[](const unsigned col) const
 {
     return m_data[col];
 }

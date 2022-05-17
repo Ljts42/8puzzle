@@ -11,7 +11,7 @@ class Solver
     {
     public:
         Solution() = default;
-        Solution(std::vector<Board> & moves)
+        Solution(const std::vector<Board> & moves)
             : m_moves(moves)
         {
         }

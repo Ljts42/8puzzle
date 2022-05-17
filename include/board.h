@@ -11,8 +11,8 @@ public:
     Board() = default;
     explicit Board(const std::vector<std::vector<unsigned>> &);
 
-    static Board create_goal(unsigned);
-    static Board create_random(unsigned);
+    static Board create_goal(const unsigned);
+    static Board create_random(const unsigned);
 
     std::size_t size() const;
     std::string to_string() const;
@@ -27,7 +27,7 @@ public:
     std::vector<Board> next_moves() const;
 
     Board & operator=(const Board &) = default;
-    const std::vector<unsigned> & operator[](unsigned) const;
+    const std::vector<unsigned> & operator[](const unsigned) const;
 
     friend bool operator==(const Board &, const Board &);
     friend bool operator!=(const Board &, const Board &);
@@ -50,7 +50,7 @@ private:
     };
 
     void calc_hash();
-    Board make_move(unsigned, unsigned) const;
+    Board make_move(const unsigned, const unsigned) const;
 
     std::vector<std::vector<unsigned>> m_data;
     std::pair<unsigned, unsigned> m_empty;
