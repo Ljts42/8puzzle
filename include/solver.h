@@ -23,9 +23,9 @@ class Solver
 
         using const_iterator = std::vector<Board>::const_iterator;
 
-        const_iterator begin() const { return m_moves.begin(); }
+        const_iterator begin() const { return m_moves.cbegin(); }
 
-        const_iterator end() const { return m_moves.end(); }
+        const_iterator end() const { return m_moves.cend(); }
 
     private:
         std::vector<Board> m_moves;
