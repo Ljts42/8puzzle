@@ -38,7 +38,7 @@ Board::Board(const std::vector<std::vector<unsigned>> & data)
 }
 
 Board::Board(std::vector<std::vector<unsigned>> && data)
-    : m_data{data}
+    : m_data{std::move(data)}
     , hash_value{calc_hash(data)}
     , m_empty{find_empty(data)}
 {
