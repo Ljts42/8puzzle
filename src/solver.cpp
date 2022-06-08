@@ -45,11 +45,11 @@ Solver::Parameters::Parameters(const Board * parent, const unsigned depth, const
 
 unsigned Solver::Parameters::calc(const Board * parent, const unsigned depth, const Board & board)
 {
-    if (parent != nullptr && parent->size() < 5) {
+    unsigned coef = std::log(depth);
+    if ((parent != nullptr && parent->size() < 5) || coef == 0) {
         return depth + board.hamming() + board.manhattan() * 2;
     }
-    unsigned coef = std::log(depth);
-    return 2 * depth / std::max(coef, 2u) + board.hamming() + board.manhattan() * 2;
+    return 2 * depth / coef + board.hamming() + board.manhattan() * 2;
 }
 
 Solver::Solution Solver::solve(const Board & initial)
