@@ -1,7 +1,7 @@
 #include "solver.h"
 
-#include <cmath>
 #include <algorithm>
+#include <cmath>
 
 namespace std {
 
