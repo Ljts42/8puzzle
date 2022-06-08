@@ -157,7 +157,7 @@ Board Board::make_move(const unsigned col, const unsigned row) const
 {
     auto result = m_data;
     std::swap(result[m_empty.first][m_empty.second], result[col][row]);
-    return Board(std::move(result));
+    return Board(result);
 }
 
 std::vector<Board> Board::next_moves() const
