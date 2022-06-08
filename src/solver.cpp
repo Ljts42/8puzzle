@@ -49,7 +49,7 @@ unsigned Solver::Parameters::calc(const Board * parent, const unsigned depth, co
         return depth + board.hamming() + board.manhattan() * 2;
     }
     unsigned coef = std::log(depth);
-    return 2 * depth / std::max(coef, 1u) + board.hamming() + board.manhattan() * 2;
+    return 2 * depth / std::max(coef, 2u) + board.hamming() + board.manhattan() * 2;
 }
 
 Solver::Solution Solver::solve(const Board & initial)
