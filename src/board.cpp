@@ -37,6 +37,13 @@ Board::Board(const std::vector<std::vector<unsigned>> & data)
 {
 }
 
+Board::Board(std::vector<std::vector<unsigned>> && data)
+    : m_data{data}
+    , hash_value{calc_hash(data)}
+    , m_empty{find_empty(data)}
+{
+}
+
 Board Board::create_goal(const unsigned size)
 {
     std::vector<std::vector<unsigned>> goal(size, std::vector<unsigned>(size));
@@ -131,8 +138,10 @@ unsigned Board::manhattan() const
     for (unsigned col = 0; col < size(); ++col) {
         for (unsigned row = 0; row < size(); ++row) {
             if (m_data[col][row] != 0) {
-                manh_value += abs((m_data[col][row] - 1) / size() - col);
-                manh_value += abs((m_data[col][row] - 1) % size() - row);
+                int x = (m_data[col][row] - 1) / size();
+                manh_value += abs(x - col);
+                int y = (m_data[col][row] - 1) % size();
+                manh_value += abs(y - row);
             }
         }
     }
