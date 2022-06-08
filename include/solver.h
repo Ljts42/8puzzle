@@ -11,21 +11,13 @@ class Solver
     {
     public:
         Solution() = default;
-        Solution(const std::vector<Board> & moves)
-            : m_moves(moves)
-        {
-        }
+        Solution(const std::vector<Board> &);
 
-        std::size_t moves() const
-        {
-            return m_moves.size() - (m_moves.empty() ? 0 : 1);
-        }
+        std::size_t moves() const;
 
         using const_iterator = std::vector<Board>::const_iterator;
-
-        const_iterator begin() const { return m_moves.cbegin(); }
-
-        const_iterator end() const { return m_moves.cend(); }
+        const_iterator begin() const;
+        const_iterator end() const;
 
     private:
         std::vector<Board> m_moves;
@@ -33,17 +25,14 @@ class Solver
 
     struct Parameters
     {
-        unsigned depth;
-        unsigned heuristic;
         const Board * parent;
+        unsigned depth;
+        unsigned value;
 
         Parameters() = default;
-        Parameters(const unsigned d, const unsigned h, const Board * p)
-            : depth(d)
-            , heuristic(h)
-            , parent(p)
-        {
-        }
+        Parameters(const Board *, const unsigned, const Board &);
+
+        static unsigned calc(const Board *, const unsigned, const Board &);
     };
 
 public:

@@ -1,19 +1,40 @@
 #include "board.h"
 
-#define distance(a, b) (a > b) ? a - b : b - a
+#include <algorithm>
+#include <random>
 
-Board::Board(const std::vector<std::vector<unsigned>> & data)
-    : m_data(data)
+namespace {
+
+std::pair<unsigned, unsigned> find_empty(const std::vector<std::vector<unsigned>> & data)
 {
-    calc_hash();
     for (unsigned col = 0; col < data.size(); ++col) {
         for (unsigned row = 0; row < data.size(); ++row) {
             if (data[col][row] == 0) {
-                m_empty = std::make_pair(col, row);
-                return;
+                return {col, row};
             }
         }
     }
+    return {0, 0};
+}
+
+unsigned calc_hash(const std::vector<std::vector<unsigned>> & data)
+{
+    unsigned value = 0;
+    for (unsigned col = 0; col < data.size(); ++col) {
+        for (unsigned row = 0; row < data.size(); ++row) {
+            value = value * 31 + data[col][row];
+        }
+    }
+    return value;
+}
+
+} // anonymous namespace
+
+Board::Board(const std::vector<std::vector<unsigned>> & data)
+    : m_data{data}
+    , hash_value{calc_hash(data)}
+    , m_empty{find_empty(data)}
+{
 }
 
 Board Board::create_goal(const unsigned size)
@@ -26,19 +47,15 @@ Board Board::create_goal(const unsigned size)
         }
     }
     goal[size - 1][size - 1] = 0;
-    return Board(goal);
+    return Board(std::move(goal));
 }
 
 Board Board::create_random(const unsigned size)
 {
-    if (size == 0) {
-        return Board();
-    }
-
     std::vector<unsigned> permutation(size * size, 0);
-    std::iota(permutation.begin(), permutation.end() - 1, 1);
+    std::iota(permutation.begin(), permutation.end(), 0);
 
-    std::shuffle(permutation.begin(), permutation.end(), random_struct().get_rand());
+    std::shuffle(permutation.begin(), permutation.end(), std::mt19937(std::random_device()()));
 
     std::vector<std::vector<unsigned>> table(size, std::vector<unsigned>(size));
     for (unsigned col = 0; col < size; ++col) {
@@ -46,7 +63,7 @@ Board Board::create_random(const unsigned size)
             table[col][row] = permutation[col * size + row];
         }
     }
-    return Board(table);
+    return Board(std::move(table));
 }
 
 std::size_t Board::size() const
@@ -89,7 +106,7 @@ bool Board::is_solvable() const
             }
         }
     }
-    return (1 & (cnt ^ (m_empty.first | size()))) != 0u;
+    return (size() % 2 == 1) ? (cnt % 2 == 0) : (cnt % 2 != m_empty.first % 2);
 }
 
 unsigned Board::hamming() const
@@ -100,12 +117,12 @@ unsigned Board::hamming() const
     unsigned hamm_value = 0;
     for (unsigned col = 0; col < size(); ++col) {
         for (unsigned row = 0; row < size(); ++row) {
-            if (m_data[col][row] != col * size() + row + 1) {
+            if (m_data[col][row] != (col * size() + row + 1) % (size() * size())) {
                 ++hamm_value;
             }
         }
     }
-    return hamm_value - static_cast<unsigned>(m_data[size() - 1][size() - 1] == 0);
+    return hamm_value;
 }
 
 unsigned Board::manhattan() const
@@ -114,21 +131,12 @@ unsigned Board::manhattan() const
     for (unsigned col = 0; col < size(); ++col) {
         for (unsigned row = 0; row < size(); ++row) {
             if (m_data[col][row] != 0) {
-                manh_value += distance((m_data[col][row] - 1) / size(), col);
-                manh_value += distance((m_data[col][row] - 1) % size(), row);
+                manh_value += abs((m_data[col][row] - 1) / size() - col);
+                manh_value += abs((m_data[col][row] - 1) % size() - row);
             }
         }
     }
     return manh_value;
-}
-
-void Board::calc_hash()
-{
-    for (unsigned col = 0; col < size(); ++col) {
-        for (unsigned row = 0; row < size(); ++row) {
-            hash_value = hash_value * 31 + m_data[col][row];
-        }
-    }
 }
 
 unsigned Board::hash() const
@@ -138,9 +146,9 @@ unsigned Board::hash() const
 
 Board Board::make_move(const unsigned col, const unsigned row) const
 {
-    auto result(m_data);
+    auto result = m_data;
     std::swap(result[m_empty.first][m_empty.second], result[col][row]);
-    return Board(result);
+    return Board(std::move(result));
 }
 
 std::vector<Board> Board::next_moves() const

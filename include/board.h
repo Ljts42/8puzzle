@@ -1,7 +1,5 @@
 #pragma once
 
-#include <algorithm>
-#include <random>
 #include <string>
 #include <vector>
 
@@ -34,25 +32,9 @@ public:
     friend std::ostream & operator<<(std::ostream &, const Board &);
 
 private:
-    struct random_struct
-    {
-        random_struct()
-            : m_rand_engine(std::random_device{}())
-        {
-        }
-        std::mt19937 get_rand()
-        {
-            return m_rand_engine;
-        }
-
-    private:
-        mutable std::mt19937 m_rand_engine;
-    };
-
-    void calc_hash();
     Board make_move(const unsigned, const unsigned) const;
 
     std::vector<std::vector<unsigned>> m_data;
+    unsigned hash_value;
     std::pair<unsigned, unsigned> m_empty;
-    unsigned hash_value = 0;
 };
