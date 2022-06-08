@@ -25,9 +25,9 @@ class Solver
 
     struct Parameters
     {
-        const Board * parent;
-        unsigned depth;
-        unsigned value;
+        const Board * m_parent;
+        unsigned m_depth;
+        unsigned m_value;
 
         Parameters() = default;
         Parameters(const Board *, const unsigned, const Board &);

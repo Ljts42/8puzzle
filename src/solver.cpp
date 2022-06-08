@@ -1,6 +1,7 @@
 #include "solver.h"
 
 #include <cmath>
+#include <algorithm>
 
 namespace std {
 
@@ -35,19 +36,20 @@ Solver::Solution::const_iterator Solver::Solution::end() const
     return m_moves.cend();
 }
 
-Solver::Parameters::Parameters(const Board * p, const unsigned d, const Board & b)
-    : parent{p}
-    , depth{d}
-    , value{calc(p, d, b)}
+Solver::Parameters::Parameters(const Board * parent, const unsigned depth, const Board & board)
+    : m_parent{parent}
+    , m_depth{depth}
+    , m_value{calc(parent, depth, board)}
 {
 }
 
-unsigned Solver::Parameters::calc(const Board * p, const unsigned d, const Board & b)
+unsigned Solver::Parameters::calc(const Board * parent, const unsigned depth, const Board & board)
 {
-    if (p != nullptr && p->size() < 5) {
-        return d + b.hamming() + b.manhattan() * 2;
+    if (parent != nullptr && parent->size() < 5) {
+        return depth + board.hamming() + board.manhattan() * 2;
     }
-    return 2 * d / std::log(d) + b.hamming() + b.manhattan() * 2;
+    unsigned coef = std::log(depth);
+    return 2 * depth / std::max(coef, 1u) + board.hamming() + board.manhattan() * 2;
 }
 
 Solver::Solution Solver::solve(const Board & initial)
@@ -58,7 +60,7 @@ Solver::Solution Solver::solve(const Board & initial)
 
     std::unordered_map<Board, Parameters> states;
     auto comparator = [&states](const Board & lhs, const Board & rhs) {
-        return states[lhs].value >= states[rhs].value;
+        return states[lhs].m_value >= states[rhs].m_value;
     };
     std::priority_queue<Board, std::vector<Board>, decltype(comparator)> queue(comparator);
 
@@ -71,7 +73,7 @@ Solver::Solution Solver::solve(const Board & initial)
             break;
         }
 
-        unsigned depth = states[current].depth + 1;
+        unsigned depth = states[current].m_depth + 1;
         const Board * cur_ptr = &((*states.find(current)).first);
 
         auto available = current.next_moves();
@@ -86,10 +88,10 @@ Solver::Solution Solver::solve(const Board & initial)
         }
     }
 
-    std::vector<Board> m_moves(states[queue.top()].depth + 1);
+    std::vector<Board> m_moves(states[queue.top()].m_depth + 1);
     m_moves.back() = queue.top();
     for (std::size_t i = 1; i < m_moves.size(); ++i) {
-        m_moves[m_moves.size() - i - 1] = *states[m_moves[m_moves.size() - i]].parent;
+        m_moves[m_moves.size() - i - 1] = *states[m_moves[m_moves.size() - i]].m_parent;
     }
 
     return Solution(m_moves);
