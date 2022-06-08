@@ -62,7 +62,7 @@ Solver::Solution Solver::solve(const Board & initial)
     };
     std::priority_queue<Board, std::vector<Board>, decltype(comparator)> queue(comparator);
 
-    states[initial] = Parameters(nullptr, 0, std::move(initial));
+    states[initial] = Parameters(nullptr, 0, initial);
     queue.push(initial);
 
     while (!queue.empty()) {
@@ -81,7 +81,7 @@ Solver::Solution Solver::solve(const Board & initial)
             if (states.count(available[i])) {
                 continue;
             }
-            states[available[i]] = Parameters(cur_ptr, depth, std::move(available[i]));
+            states[available[i]] = Parameters(cur_ptr, depth, available[i]);
             queue.push(available[i]);
         }
     }
