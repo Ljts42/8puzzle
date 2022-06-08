@@ -47,7 +47,7 @@ unsigned Solver::Parameters::calc(const Board * p, const unsigned d, const Board
     if (p != nullptr && p->size() < 5) {
         return d + b.hamming() + b.manhattan() * 2;
     }
-    return d / std::log(d) + b.hamming() + b.manhattan();
+    return 2 * d / std::log(d) + b.hamming() + b.manhattan() * 2;
 }
 
 Solver::Solution Solver::solve(const Board & initial)

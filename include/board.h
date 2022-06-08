@@ -8,6 +8,7 @@ class Board
 public:
     Board() = default;
     explicit Board(const std::vector<std::vector<unsigned>> &);
+    explicit Board(std::vector<std::vector<unsigned>> &&);
 
     static Board create_goal(const unsigned);
     static Board create_random(const unsigned);
