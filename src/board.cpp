@@ -138,10 +138,10 @@ unsigned Board::manhattan() const
     for (unsigned col = 0; col < size(); ++col) {
         for (unsigned row = 0; row < size(); ++row) {
             if (m_data[col][row] != 0) {
-                int x = (m_data[col][row] - 1) / size();
-                manh_value += abs(x - col);
-                int y = (m_data[col][row] - 1) % size();
-                manh_value += abs(y - row);
+                int x = (m_data[col][row] - 1) / size() - col;
+                manh_value += abs(x);
+                int y = (m_data[col][row] - 1) % size() - row;
+                manh_value += abs(y);
             }
         }
     }
