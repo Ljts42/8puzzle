@@ -32,15 +32,15 @@ unsigned calc_hash(const std::vector<std::vector<unsigned>> & data)
 
 Board::Board(const std::vector<std::vector<unsigned>> & data)
     : m_data{data}
-    , hash_value{calc_hash(data)}
-    , m_empty{find_empty(data)}
+    , hash_value{calc_hash(m_data)}
+    , m_empty{find_empty(m_data)}
 {
 }
 
 Board::Board(std::vector<std::vector<unsigned>> && data)
-    : m_data{std::move(data)}
-    , hash_value{calc_hash(data)}
-    , m_empty{find_empty(data)}
+    : m_data{std::forward<std::vector<std::vector<unsigned>>>(data)}
+    , hash_value{calc_hash(m_data)}
+    , m_empty{find_empty(m_data)}
 {
 }
 
@@ -157,23 +157,23 @@ Board Board::make_move(const unsigned col, const unsigned row) const
 {
     auto result = m_data;
     std::swap(result[m_empty.first][m_empty.second], result[col][row]);
-    return Board(result);
+    return Board(std::move(result));
 }
 
 std::vector<Board> Board::next_moves() const
 {
     std::vector<Board> moves;
     if (m_empty.first > 0) {
-        moves.push_back(make_move(m_empty.first - 1, m_empty.second));
+        moves.emplace_back(make_move(m_empty.first - 1, m_empty.second));
     }
     if (m_empty.second > 0) {
-        moves.push_back(make_move(m_empty.first, m_empty.second - 1));
+        moves.emplace_back(make_move(m_empty.first, m_empty.second - 1));
     }
     if (m_empty.first + 1 < size()) {
-        moves.push_back(make_move(m_empty.first + 1, m_empty.second));
+        moves.emplace_back(make_move(m_empty.first + 1, m_empty.second));
     }
     if (m_empty.second + 1 < size()) {
-        moves.push_back(make_move(m_empty.first, m_empty.second + 1));
+        moves.emplace_back(make_move(m_empty.first, m_empty.second + 1));
     }
     return moves;
 }

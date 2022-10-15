@@ -21,6 +21,11 @@ Solver::Solution::Solution(const std::vector<Board> & moves)
 {
 }
 
+Solver::Solution::Solution(std::vector<Board> && moves)
+    : m_moves(std::forward<std::vector<Board>>(moves))
+{
+}
+
 std::size_t Solver::Solution::moves() const
 {
     return m_moves.size() - (m_moves.empty() ? 0 : 1);
@@ -39,17 +44,13 @@ Solver::Solution::const_iterator Solver::Solution::end() const
 Solver::Parameters::Parameters(const Board * parent, const unsigned depth, const Board & board)
     : m_parent{parent}
     , m_depth{depth}
-    , m_value{calc(parent, depth, board)}
+    , m_value{calculate(depth, board)}
 {
 }
 
-unsigned Solver::Parameters::calc(const Board * parent, const unsigned depth, const Board & board)
+unsigned Solver::Parameters::calculate(const unsigned depth, const Board & board)
 {
-    double coef = std::log(depth);
-    if ((parent != nullptr && parent->size() < 5) || coef == 0) {
-        return depth + board.hamming() + board.manhattan() * 2;
-    }
-    return 2 * depth / coef + board.hamming() + board.manhattan() * 2;
+    return depth + (board.hamming() + board.manhattan()) * 1.7;
 }
 
 Solver::Solution Solver::solve(const Board & initial)
@@ -74,7 +75,7 @@ Solver::Solution Solver::solve(const Board & initial)
         }
 
         unsigned depth = states[current].m_depth + 1;
-        const Board * cur_ptr = &((*states.find(current)).first);
+        const Board * cur_ptr = &(states.find(current)->first);
 
         auto available = current.next_moves();
         queue.pop();
@@ -94,5 +95,5 @@ Solver::Solution Solver::solve(const Board & initial)
         m_moves[m_moves.size() - i - 1] = *states[m_moves[m_moves.size() - i]].m_parent;
     }
 
-    return Solution(m_moves);
+    return Solution(std::move(m_moves));
 }

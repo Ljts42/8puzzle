@@ -12,6 +12,7 @@ class Solver
     public:
         Solution() = default;
         Solution(const std::vector<Board> &);
+        Solution(std::vector<Board> &&);
 
         std::size_t moves() const;
 
@@ -32,7 +33,7 @@ class Solver
         Parameters() = default;
         Parameters(const Board *, const unsigned, const Board &);
 
-        static unsigned calc(const Board *, const unsigned, const Board &);
+        static unsigned calculate(const unsigned, const Board &);
     };
 
 public:
