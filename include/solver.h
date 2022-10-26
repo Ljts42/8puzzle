@@ -2,24 +2,40 @@
 
 #include "board.h"
 
+#include <queue>
+#include <unordered_map>
+
 class Solver
 {
     class Solution
     {
     public:
-        std::size_t moves() const { return 0; }
+        Solution() = default;
+        Solution(const std::vector<Board> &);
+        Solution(std::vector<Board> &&);
+
+        std::size_t moves() const;
 
         using const_iterator = std::vector<Board>::const_iterator;
-
-        const_iterator begin() const { return m_moves.begin(); }
-
-        const_iterator end() const { return m_moves.end(); }
+        const_iterator begin() const;
+        const_iterator end() const;
 
     private:
-        // FIXME:
         std::vector<Board> m_moves;
     };
 
+    struct Parameters
+    {
+        const Board * m_parent;
+        unsigned m_depth;
+        unsigned m_value;
+
+        Parameters() = default;
+        Parameters(const Board *, const unsigned, const Board &);
+
+        static unsigned calculate(const unsigned, const Board &);
+    };
+
 public:
-    static Solution solve(const Board & initial);
+    static Solution solve(const Board &);
 };

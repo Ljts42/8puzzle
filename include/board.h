@@ -6,38 +6,36 @@
 class Board
 {
 public:
-    static Board create_goal(unsigned size);
-
-    static Board create_random(unsigned size);
-
     Board() = default;
+    explicit Board(const std::vector<std::vector<unsigned>> &);
+    explicit Board(std::vector<std::vector<unsigned>> &&);
 
-    explicit Board(const std::vector<std::vector<unsigned>> & data);
+    static Board create_goal(const unsigned);
+    static Board create_random(const unsigned);
 
     std::size_t size() const;
-
-    bool is_goal() const;
-
-    unsigned hamming() const;
-
-    unsigned manhattan() const;
-
     std::string to_string() const;
 
+    bool is_goal() const;
     bool is_solvable() const;
 
-    friend bool operator==(const Board & /*lhs*/, const Board & /*rhs*/)
-    {
-        return true;
-    }
+    unsigned hamming() const;
+    unsigned manhattan() const;
+    unsigned hash() const;
 
-    friend bool operator!=(const Board & /*lhs*/, const Board & /*rhs*/)
-    {
-        return false;
-    }
+    std::vector<Board> next_moves() const;
 
-    friend std::ostream & operator<<(std::ostream & out, const Board & board)
-    {
-        return out << board.to_string();
-    }
+    Board & operator=(const Board &) = default;
+    const std::vector<unsigned> & operator[](const unsigned) const;
+
+    friend bool operator==(const Board &, const Board &);
+    friend bool operator!=(const Board &, const Board &);
+    friend std::ostream & operator<<(std::ostream &, const Board &);
+
+private:
+    Board make_move(const unsigned, const unsigned) const;
+
+    std::vector<std::vector<unsigned>> m_data;
+    unsigned hash_value;
+    std::pair<unsigned, unsigned> m_empty;
 };
